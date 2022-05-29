@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+  <Document name="fhir-pseudonymization-proxy.ZPM">
+    <Module>
+      <Name>fhir-pseudonymization-proxy</Name>
+      <Version>0.1.0</Version>
+      <Description>FHIR pseudonymization proxy built with InterSystems IRIS for Health</Description>
+      <Packaging>module</Packaging>
+      <SourcesRoot>src</SourcesRoot>
+      <Resource Name="FHIRPROXYPKG.PKG"/>
+    </Module>
+  </Document>
+</Export>

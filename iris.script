@@ -1,0 +1,73 @@
+zn "%SYS"
+Do ##class(Security.Users).UnExpireUserPasswords("*")
+
+// from https://github.com/intersystems-community/iris-fhir-template/blob/master/iris.script
+
+zn "HSLIB"
+set namespace="FHIRPROXY"
+
+// Install a Foundation namespace and change to it
+Do ##class(HS.HC.Util.Installer).InstallFoundation(namespace)
+zn namespace
+
+// Configuration
+Set fhirrepoEndpoint = "/fhirrepo/r4"
+Set fhirrepoServiceName = "IRIS FHIRREPO"
+Set strategyClass = "HS.FHIRServer.Storage.Json.InteractionsStrategy"
+set metadataPackages = $lb("hl7.fhir.r4.core@4.0.1")
+
+Set fhirproxyEndpoint = "/fhirproxy/r4"
+
+
+// Install elements that are required for a FHIR-enabled namespace
+Do ##class(HS.FHIRServer.Installer).InstallNamespace()
+
+// Install an instance of a FHIR Service into the current namespace
+Do ##class(HS.FHIRServer.Installer).InstallInstance(fhirrepoEndpoint, strategyClass, metadataPackages)
+
+// Configure FHIR Service instance to accept unauthenticated requests
+set strategy = ##class(HS.FHIRServer.API.InteractionsStrategy).GetStrategyForEndpoint(fhirrepoEndpoint)
+set config = strategy.GetServiceConfigData()
+set config.DebugMode = 4
+do strategy.SaveServiceConfigData(config)
+
+
+
+
+// Install FHIR Proxy Interop Adapter
+do ##class(HS.FHIRServer.Installer).InteropAdapterConfig(fhirproxyEndpoint)
+
+// Change CSPApp to a custom DispatchClass
+w ##class(HS.Util.SystemAPI).UpdateCSPApp(fhirproxyEndpoint, $lb($lb("DispatchClass","FHIRPROXYPKG.HS.FHIRServer.HC.FHIRInteropAdapter")))
+
+
+
+// load FHIRPROXYPKG ZPM package including production
+// note: the ZPM module will overwrite the production with its business hosts
+zpm "load -v /opt/irisbuild/"
+
+write !, "ZPM module loading finished.", !
+
+
+// Add Service Registry entry for built-in target FHIR server
+set service = ##class(HS.Registry.Service.HTTP).%New()
+set service.Name = fhirrepoServiceName
+set service.Type = "HTTP"
+set service.Host = "localhost"
+set service.Port = 52773
+set service.URL = fhirrepoEndpoint
+do service.%Save()
+
+
+// Add production to auto-start
+do ##class(Ens.Director).SetAutoStart("FHIRPROXYPKG.FoundationProduction")
+
+
+// Populate FHIR server with example data
+write !, "Populating FHIR server with example data...", !
+
+w ##class(HS.FHIRServer.Tools.DataLoader).SubmitResourceFiles("/opt/irisbuild/example-data/", "HTTP", fhirrepoServiceName)
+
+write !, "iris.script finished.", !
+
+halt
