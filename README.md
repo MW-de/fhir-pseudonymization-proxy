@@ -1,7 +1,7 @@
 # FHIR Pseudonymization Proxy
 
-[![Gitter](https://img.shields.io/badge/Available%20on-Intersystems%20Open%20Exchange-00b2a9.svg)](https://openexchange.intersystems.com/package/git-for-iris)
-[![GitHub all releases](https://img.shields.io/badge/Available%20on-GitHub-black)](https://github.com/MW-de/git-for-iris)
+[![Gitter](https://img.shields.io/badge/Available%20on-Intersystems%20Open%20Exchange-00b2a9.svg)](https://openexchange.intersystems.com/package/FHIR-Pseudonymization-Proxy)
+[![GitHub all releases](https://img.shields.io/badge/Available%20on-GitHub-black)](https://github.com/MW-de/fhir-pseudonymization-proxy)
 [![](https://img.shields.io/badge/InterSystems-IRIS-blue.svg)](https://www.intersystems.com/products/intersystems-iris/)
 [![license](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
